@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file='Mdt.lua'/>
+	<Script file='RouteIndex.lua'/>
+	<Script file='ForcesTracker.lua'/>
+	<Script file='BloodlustTracker.lua'/>
+	<Script file='PullMarkers.lua'/>
+	<Script file='PullList.lua'/>
+	<Script file='FloorSelector.lua'/>
+	<Script file='DungeonSelector.lua'/>
+	<Script file='DeviationWarning.lua'/>
+	<Script file='RenderContext.lua'/>
+	<Script file='MapWidget.lua'/>
+	<Script file='MapView.lua'/>
+	<Script file='SplitView.lua'/>
+	<Script file='LayoutManager.lua'/>
+	<Script file='Minimap.lua'/>
+	<Script file='Settings.lua'/>
+</Ui>

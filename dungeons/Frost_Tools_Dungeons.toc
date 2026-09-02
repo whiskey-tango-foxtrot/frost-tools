@@ -1,0 +1,22 @@
+## Interface: 120100
+## Title: Frost Tools: Dungeons
+## Notes: Full-floor Mythic+ route map with per-mob kill tracking and bloodlust timing
+## Author: Frost
+## Version: 1.0
+## Dependencies: MythicDungeonTools
+## SavedVariables: FrostToolsDungeonsDB
+## IconTexture: Interface\AddOns\Frost_Tools_Dungeons\Textures\MinimapIcon.png
+
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\lib.xml
+
+init.lua
+locales.xml
+Modules\MDTAdapter.lua
+..\MythicDungeonTools\Midnight\load_midnight.xml
+Utils\load_utils.xml
+Modules\load_modules.xml
+Core.lua
