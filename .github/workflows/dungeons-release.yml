@@ -1,0 +1,74 @@
+name: Package Frost Tools - Dungeons
+
+# Only fires on changes actually under dungeons/, so other addons that may
+# live in this repo later get their own workflow and their own version
+# sequence without stepping on this one.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "dungeons/**"
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine next version
+        id: version
+        run: |
+          # Tags are namespaced "dungeons-vX.Y.Z" so this addon's version
+          # sequence stays independent of any other addon folder's tags in
+          # this repo; the zip/release name below uses the addon's real name.
+          latest_tag=$(git tag --list 'dungeons-v*' | sort -V | tail -n1)
+          if [ -z "$latest_tag" ]; then
+            version="1.0.0"
+          else
+            latest_version="${latest_tag#dungeons-v}"
+            IFS='.' read -r major minor patch <<< "$latest_version"
+            version="$major.$minor.$((patch + 1))"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=dungeons-v$version" >> "$GITHUB_OUTPUT"
+
+      - name: Stage addon folder
+        run: |
+          # The zip's top-level folder must be the addon's real folder name
+          # (Frost_Tools_Dungeons), not "dungeons" -- that's just where it
+          # lives in this repo. spec/ is our own Lua test suite, not
+          # something players need in their AddOns folder.
+          mkdir -p build/Frost_Tools_Dungeons
+          cp -r dungeons/. build/Frost_Tools_Dungeons/
+          rm -rf build/Frost_Tools_Dungeons/spec
+          sed -i "s/^## Version:.*/## Version: ${{ steps.version.outputs.version }}/" \
+            build/Frost_Tools_Dungeons/Frost_Tools_Dungeons.toc
+
+      - name: Create zip
+        id: zip
+        run: |
+          zip_name="Frost_Tools_Dungeons-v${{ steps.version.outputs.version }}.zip"
+          (cd build && zip -r "../$zip_name" Frost_Tools_Dungeons)
+          echo "name=$zip_name" >> "$GITHUB_OUTPUT"
+
+      - name: Tag this version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" \
+            "${{ steps.zip.outputs.name }}" \
+            --title "Frost Tools: Dungeons v${{ steps.version.outputs.version }}" \
+            --notes "Automated build from ${{ github.sha }}."
