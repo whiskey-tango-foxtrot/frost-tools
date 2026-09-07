@@ -7,7 +7,7 @@ local RenderContext = FTD.RenderContext
 local MAP_W, MAP_H = 390, 260
 local SIDEBAR_W = 246
 local TITLEBAR_H = 28
-local FOOTER_H = 108
+local FOOTER_H = 188
 local PADDING = 8
 local FRAME_W = MAP_W + SIDEBAR_W + PADDING * 3
 local FRAME_H = TITLEBAR_H + MAP_H + FOOTER_H + PADDING * 3
@@ -247,6 +247,10 @@ local function create()
   f.warnText:SetJustifyH("LEFT")
   f.warnBanner:Hide()
 
+  f.tacticsPanel = FTD.TacticsPanel.create(f.footer)
+  f.tacticsPanel:SetPoint("TOPLEFT", f.warnBanner, "BOTTOMLEFT", 0, -8)
+  f.tacticsPanel:SetPoint("RIGHT", f.footer, "RIGHT", -8, 0)
+
   f.emptyText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   f.emptyText:SetPoint("CENTER", f.mapWidget.viewport, "CENTER")
   f.emptyText:SetText(L["No route selected. Click Dungeon/Route above to pick one."])
@@ -295,6 +299,19 @@ local function updateLustStatus(record)
   end
 end
 
+---How much vertical room is left in the footer, below whatever the tactics
+---panel is anchored under. The footer is a fixed size (only the window's
+---overall uiScale changes it, uniformly) -- this addon never resizes it on
+---its own. The panel uses this to decide how many upcoming bosses it can
+---stack in, always showing at least the next one even past this budget.
+local function footerTacticsAvailableHeight()
+  if not frame then return 0 end
+  local top = frame.tacticsPanel and frame.tacticsPanel:GetTop()
+  local bottom = frame.footer:GetBottom()
+  if not top or not bottom then return 0 end
+  return math.max(0, top - bottom)
+end
+
 local function Render()
   if not frame then return end
   local db = getDB()
@@ -341,6 +358,7 @@ local function Render()
 
   updateForcesPanel(ctx.evalResult, db)
   updateLustStatus(ctx.lustRecord)
+  FTD.TacticsPanel.update(frame.tacticsPanel, ctx.nextBosses, footerTacticsAvailableHeight())
 end
 
 local function Tick()

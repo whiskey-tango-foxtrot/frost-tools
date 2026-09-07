@@ -9,7 +9,8 @@ local pairs, ipairs, tonumber, type = pairs, ipairs, tonumber, type
 ---usually 0-forces), and a human-readable roster for the pull list UI.
 ---
 ---Returned shape:
----  pulls[pullIndex] = { npcs = { [npcID] = cloneCountInThisPull }, totalForces = number, hasBoss = boolean }
+---  pulls[pullIndex] = { npcs = { [npcID] = cloneCountInThisPull }, totalForces = number,
+---    hasBoss = boolean, bossNames = { displayName, ... } (only present when hasBoss) }
 ---  npcNames[npcID] = display name
 ---  pullCount = number of pulls
 ---
@@ -32,6 +33,7 @@ local function build(pulls, enemies)
     local npcs = {}
     local totalForces = 0
     local hasBoss = false
+    local bossNames = nil
 
     if type(pull) == "table" then
       for enemyIndex, clones in pairs(pull) do
@@ -44,13 +46,21 @@ local function build(pulls, enemies)
             npcs[npcID] = (npcs[npcID] or 0) + cloneCount
             totalForces = totalForces + (enemyData.count or 0) * cloneCount
             index.npcNames[npcID] = enemyData.name
-            if enemyData.isBoss then hasBoss = true end
+            if enemyData.isBoss then
+              hasBoss = true
+              bossNames = bossNames or {}
+              local already = false
+              for _, name in ipairs(bossNames) do
+                if name == enemyData.name then already = true break end
+              end
+              if not already then bossNames[#bossNames + 1] = enemyData.name end
+            end
           end
         end
       end
     end
 
-    index.pulls[pullIndex] = { npcs = npcs, totalForces = totalForces, hasBoss = hasBoss }
+    index.pulls[pullIndex] = { npcs = npcs, totalForces = totalForces, hasBoss = hasBoss, bossNames = bossNames }
   end
 
   return index

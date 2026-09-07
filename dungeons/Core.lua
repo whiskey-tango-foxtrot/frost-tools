@@ -166,6 +166,18 @@ SlashCmdList["FROSTTOOLSDUNGEONS"] = function(msg)
         print("  pull "..i..": "..s..(state.pullForcesKilled[i] and (" ("..string.format("%.1f", state.pullForcesKilled[i]).." forces)") or ""))
       end
     end
+    local routeIndex = FTD.ForcesTracker.getRouteIndex()
+    if routeIndex then
+      for i = 1, routeIndex.pullCount do
+        local pull = routeIndex.pulls[i]
+        if pull and pull.hasBoss and pull.bossNames then
+          for _, name in ipairs(pull.bossNames) do
+            local hasTips = FTD.TacticsData[name] and #FTD.TacticsData[name] > 0
+            print("  boss pull "..i..": \""..name.."\" -- tactics data: "..(hasTips and "yes" or "none (add it to TacticsData.lua)"))
+          end
+        end
+      end
+    end
     local lustExpiration, lustSpellId = FTD.BloodlustTracker.scanActiveDebuff()
     print("bloodlust debuff active now: "..tostring(lustExpiration ~= nil)..
       (lustSpellId and (" (spellId "..lustSpellId..", expires in "..string.format("%.0f", lustExpiration - GetTime()).."s)") or ""))

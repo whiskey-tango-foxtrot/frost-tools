@@ -15,7 +15,7 @@ local CONTROL_BAR_H = 26
 -- matching the left column's total height so both bottoms line up.
 local WINDOW_DEFS = {
   map    = { w = 360, h = 314, dx = -324, dy = 210,  minW = 240, minH = 200 },
-  forces = { w = 360, h = 208, dx = -324, dy = -112, minW = 240, minH = 140 },
+  forces = { w = 360, h = 240, dx = -324, dy = -112, minW = 240, minH = 140 },
   pulls  = { w = 280, h = 530, dx = 44,   dy = 210,  minW = 180, minH = 120 },
 }
 
@@ -342,6 +342,10 @@ local function createForcesWindow()
   f.lustStatus:SetJustifyH("LEFT")
   f.lustStatus:SetWordWrap(true)
 
+  f.tacticsPanel = FTD.TacticsPanel.create(f.body)
+  f.tacticsPanel:SetPoint("TOPLEFT", f.lustStatus, "BOTTOMLEFT", 0, -8)
+  f.tacticsPanel:SetPoint("RIGHT", f.body, "RIGHT", 0, 0)
+
   return f
 end
 
@@ -403,6 +407,20 @@ local function ensureCreated()
   createPullsWindow()
 end
 
+---How much vertical room is left in the Forces window, below whatever the
+---tactics panel is anchored under, given the window's *current* size (never
+---resized by this addon -- only ever by the player's own drag). The panel
+---uses this to decide how many upcoming bosses it can stack in, always
+---showing at least the next one even past this budget.
+local function forcesTacticsAvailableHeight()
+  local f = windows.forces
+  if not f or f.minimized then return 0 end
+  local top = f.tacticsPanel and f.tacticsPanel:GetTop()
+  local bottom = f.body:GetBottom()
+  if not top or not bottom then return 0 end
+  return math.max(0, top - bottom)
+end
+
 local function Render()
   -- A background auto-detect (e.g. walking into a dungeon) shouldn't conjure
   -- windows onto the screen on its own — only re-render if already shown.
@@ -450,6 +468,7 @@ local function Render()
 
   updateForcesPanel(ctx.evalResult, db)
   updateLustStatus(ctx.lustRecord)
+  FTD.TacticsPanel.update(windows.forces.tacticsPanel, ctx.nextBosses, forcesTacticsAvailableHeight())
 end
 
 local function Tick()

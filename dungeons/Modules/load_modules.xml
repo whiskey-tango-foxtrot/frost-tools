@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file='Mdt.lua'/>
+	<Script file='TacticsData.lua'/>
 	<Script file='RouteIndex.lua'/>
 	<Script file='ForcesTracker.lua'/>
 	<Script file='BloodlustTracker.lua'/>
@@ -9,6 +10,7 @@
 	<Script file='DungeonSelector.lua'/>
 	<Script file='DeviationWarning.lua'/>
 	<Script file='RenderContext.lua'/>
+	<Script file='TacticsPanel.lua'/>
 	<Script file='MapWidget.lua'/>
 	<Script file='MapView.lua'/>
 	<Script file='SplitView.lua'/>

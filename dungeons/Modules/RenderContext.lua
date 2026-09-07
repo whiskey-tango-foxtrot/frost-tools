@@ -10,6 +10,32 @@ local MDT = FTD.MDT
 local selectedDungeonIndex = nil
 local lastPreset = nil -- the actual preset table, not its .uid (not reliably stable)
 
+local MAX_UPCOMING_BOSSES = 6 -- generous cap; the panel only shows as many as fit anyway
+
+---Scans forward from `currentPull` for every upcoming boss pull that has tips
+---in FTD.TacticsData, so the "Next Boss" callout can show a tip a few trash
+---pulls ahead of time rather than only on the boss's own pull, and can also
+---list bosses after that one when the panel has room to show them. Returns
+---an ordered array (possibly empty) of { pullIndex, name, tips }.
+local function findUpcomingBossTactics(routeIndex, currentPull)
+  local found = {}
+  if not routeIndex or not currentPull then return found end
+  for i = currentPull, routeIndex.pullCount do
+    local pull = routeIndex.pulls[i]
+    if pull and pull.hasBoss and pull.bossNames then
+      for _, name in ipairs(pull.bossNames) do
+        local tips = FTD.TacticsData[name]
+        if tips and #tips > 0 then
+          found[#found + 1] = { pullIndex = i, name = name, tips = tips }
+          break -- one entry per pull, even if it somehow has multiple boss NPCs
+        end
+      end
+      if #found >= MAX_UPCOMING_BOSSES then break end
+    end
+  end
+  return found
+end
+
 local function selectDungeon(dungeonIndex)
   selectedDungeonIndex = dungeonIndex
 end
@@ -85,6 +111,7 @@ local function gather(warnThresholdPct)
     plannedLustPulls = plannedLustPulls,
     dungeonMax = dungeonMax,
     evalResult = evalResult,
+    nextBosses = findUpcomingBossTactics(routeIndex, state and state.currentPull),
   }
 end
 

@@ -2,7 +2,7 @@
 ## Title: Frost Tools: Dungeons
 ## Notes: Full-floor Mythic+ route map with per-mob kill tracking and bloodlust timing
 ## Author: Frost
-## Version: 1.0
+## Version: 1.0.1
 ## Dependencies: MythicDungeonTools
 ## SavedVariables: FrostToolsDungeonsDB
 ## IconTexture: Interface\AddOns\Frost_Tools_Dungeons\Textures\MinimapIcon.png
