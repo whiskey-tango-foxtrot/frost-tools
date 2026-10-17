@@ -23,7 +23,10 @@ end
 ---Figures out which dungeon the player is currently in, preferring the
 ---active challenge map (identifies the dungeon directly and is unaffected by
 ---UI map IDs being shared/changed/wrong) and falling back to the player's
----current zone otherwise.
+---current zone + entrance subzone otherwise -- the same lookup MDT itself
+---uses (MDT 6.2.17+ registers each dungeon's zones through
+---MDT:RegisterDungeonLocation, shimmed in MDTAdapter.lua), so a zone shared
+---by several dungeon entrances resolves the way MDT would resolve it.
 ---@return number|nil dungeonIndex
 local function detectCurrentDungeon()
   local challengeMapId = C_ChallengeMode and C_ChallengeMode.GetActiveChallengeMapID and
@@ -31,9 +34,8 @@ local function detectCurrentDungeon()
   local dungeonIdx = dungeonIndexForChallengeMap(challengeMapId)
   if dungeonIdx then return dungeonIdx end
 
-  if MDT.zoneIdToDungeonIdx and C_Map and C_Map.GetBestMapForUnit then
-    local zoneId = C_Map.GetBestMapForUnit("player")
-    return zoneId and MDT.zoneIdToDungeonIdx[zoneId]
+  if MDT.GetDungeonIdxForCurrentLocation then
+    return (MDT:GetDungeonIdxForCurrentLocation())
   end
   return nil
 end

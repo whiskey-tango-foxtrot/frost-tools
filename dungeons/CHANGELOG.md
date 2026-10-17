@@ -1,5 +1,26 @@
 # Frost Tools: Dungeons — Changelog
 
+## 1.0.2
+
+### Fixed
+
+**World of Warcraft 12.1.5 / MythicDungeonTools 6.3 compatibility.**
+
+- The TOC now declares Interface `120105` (12.1.5) alongside `120100`, so the
+  addon is no longer flagged out of date on a 12.1.5 client.
+- MDT 6.2.17 and later dungeon files call `MDT:RegisterDungeonLocation(...)`
+  instead of writing `MDT.zoneIdToDungeonIdx` directly. Because this addon
+  loads those files into its own adapter table, that method has to exist
+  there: without it every Midnight dungeon file errored on load before it had
+  assigned its map, forces-total and enemy tables, so every dungeon showed as
+  having no enemy data. The adapter now provides it, with the same
+  shared-zone / entrance-subzone priority rules as MDT's own implementation.
+- Dungeon auto-detection outside a keystone now uses that zone + subzone
+  lookup, matching how MDT resolves zones several dungeons share (e.g.
+  Eversong Woods).
+
+Requires MythicDungeonTools 6.3.6 or newer on 12.1.5.
+
 ## 1.0.1
 
 ### New

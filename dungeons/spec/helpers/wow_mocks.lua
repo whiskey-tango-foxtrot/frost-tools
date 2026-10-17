@@ -63,10 +63,12 @@ end
 
 ---Executes a source file (repo-relative path) in the current globals.
 ---Re-executing is cheap and gives tests a fresh FTD.<Module> each call.
-function M.loadSource(relPath)
+---Extra arguments are passed through as the chunk's `...` (WoW hands every
+---addon file `addonName, addonTable`; files like MDTAdapter.lua read it).
+function M.loadSource(relPath, ...)
   local chunk, err = loadfile(relPath)
   assert(chunk, err)
-  return chunk()
+  return chunk(...)
 end
 
 return M

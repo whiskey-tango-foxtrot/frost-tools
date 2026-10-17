@@ -4,7 +4,7 @@ A companion AddOn for [Mythic Dungeon Tools](https://www.curseforge.com/wow/addo
 
 ## Requirements
 
-- **World of Warcraft: Retail**, Midnight (Interface 120100).
+- **World of Warcraft: Retail**, Midnight 12.1.5 (Interface 120105; 120100 also declared).
 - **[Mythic Dungeon Tools](https://www.curseforge.com/wow/addons/mythic-dungeon-tools) must be installed and enabled.** This addon has no route data or dungeon map art of its own — it reads MDT's saved presets (`MythicDungeonToolsDB`) and MDT's own dungeon map/enemy data files at runtime. It will not function without MDT present.
 - No other addon dependency. It does **not** require `MythicDungeonTools_NextPullTracker` — progress tracking here is a separate, independent engine (see below), not a read of NPT's state.
 - A Bloodlust-class effect landing on you (Bloodlust/Heroism/Time Warp/Ancient Hysteria/Fury of the Aspects/an Engineering item like Drums of Rage) is picked up automatically for the bloodlust readout — no setup needed, but see the caveat under Known Limitations.
